@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pyRing Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d1420;
+    --surface:#141d2b;
+    --surface-alt:#1a2536;
+    --text:#e7ebf2;
+    --text-dim:#8a96ab;
+    --accent:#e8a33d;
+    --accent-2:#4fa8a0;
+    --rule:#26334a;
+    --max:1040px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  .wrap{max-width:var(--max); margin:0 auto; padding:0 28px;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* NAV */
+  header.nav{
+    position:sticky; top:0; z-index:10;
+    background:rgba(13,20,32,0.88);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--rule);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px; max-width:var(--max); margin:0 auto;
+  }
+  .nav-brand{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px; letter-spacing:0.04em;
+    color:var(--accent);
+  }
+  .nav-links{display:flex; gap:28px; list-style:none;}
+  .nav-links a{
+    font-size:14px; color:var(--text-dim); text-decoration:none;
+    transition:color .15s ease;
+  }
+  .nav-links a:hover, .nav-links a:focus-visible{color:var(--text);}
+
+  /* HERO */
+  .hero{
+    padding:96px 0 64px;
+    border-bottom:1px solid var(--rule);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--accent-2);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:22px;
+  }
+  .eyebrow::before{
+    content:""; width:8px; height:8px; border-radius:50%;
+    background:var(--accent-2); display:inline-block;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:clamp(2.4rem, 5vw, 4rem);
+    line-height:1.08;
+    letter-spacing:-0.01em;
+    max-width:16ch;
+    margin-bottom:22px;
+  }
+  h1 em{color:var(--accent); font-style:normal;}
+  .hero-sub{
+    color:var(--text-dim);
+    font-size:1.08rem;
+    max-width:52ch;
+    margin-bottom:36px;
+  }
+  .cta-row{display:flex; gap:16px; flex-wrap:wrap; align-items:center;}
+  .btn{
+    display:inline-block;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px;
+    padding:13px 24px;
+    border-radius:2px;
+    text-decoration:none;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn-primary{background:var(--accent); color:#1a1305; font-weight:500;}
+  .btn-primary:hover{transform:translateY(-1px); background:#f0af4d;}
+  .btn-ghost{border:1px solid var(--rule); color:var(--text-dim);}
+  .btn-ghost:hover{border-color:var(--text-dim); color:var(--text);}
+
+  /* WAVEFORM SIGNATURE */
+  .waveform{
+    margin-top:56px;
+    border:1px solid var(--rule);
+    background:var(--surface);
+    border-radius:3px;
+    padding:20px 24px 16px;
+  }
+  .waveform-label{
+    display:flex; justify-content:space-between;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px; color:var(--text-dim);
+    letter-spacing:0.03em;
+    margin-bottom:8px;
+  }
+  .waveform svg{display:block; width:100%; height:auto;}
+  .waveform-path{
+    fill:none; stroke:var(--accent); stroke-width:2;
+    stroke-linecap:round;
+    stroke-dasharray:1400;
+    stroke-dashoffset:1400;
+    animation:draw 3.2s ease-out forwards;
+  }
+  .waveform-axis{stroke:var(--rule); stroke-width:1;}
+  @keyframes draw{
+    to{stroke-dashoffset:0;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .waveform-path{animation:none; stroke-dashoffset:0;}
+  }
+
+  /* DATA STRIP */
+  .strip{
+    border-bottom:1px solid var(--rule);
+    background:var(--surface);
+  }
+  .strip .wrap{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:0;
+  }
+  .strip-item{
+    padding:22px 0;
+    border-right:1px solid var(--rule);
+  }
+  .strip-item:last-child{border-right:none;}
+  .strip-item .k{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--text-dim); margin-bottom:6px;
+  }
+  .strip-item .v{font-size:1.05rem; font-weight:500;}
+  @media (max-width:640px){
+    .strip .wrap{grid-template-columns:1fr;}
+    .strip-item{border-right:none; border-bottom:1px solid var(--rule); padding:16px 0;}
+    .strip-item:last-child{border-bottom:none;}
+  }
+
+  /* SECTIONS */
+  section{padding:72px 0;}
+  section.alt{background:var(--surface); border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);}
+  .section-head{
+    display:flex; align-items:baseline; gap:14px;
+    margin-bottom:34px;
+  }
+  .section-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; color:var(--accent-2);
+  }
+  h2{
+    font-family:'Fraunces', serif;
+    font-weight:500;
+    font-size:1.9rem;
+  }
+  .lede{color:var(--text-dim); max-width:64ch; margin-bottom:8px;}
+
+  /* PROGRAM */
+  .program-list{list-style:none; border-top:1px solid var(--rule);}
+  .program-item{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:24px;
+    padding:20px 0;
+    border-bottom:1px solid var(--rule);
+    align-items:baseline;
+  }
+  .program-time{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px; color:var(--accent);
+  }
+  .program-title{font-weight:500; margin-bottom:4px;}
+  .program-desc{color:var(--text-dim); font-size:0.94rem;}
+  @media (max-width:560px){
+    .program-item{grid-template-columns:1fr;}
+  }
+
+  /* VENUE */
+  .venue-grid{
+    display:grid;
+    grid-template-columns:1.1fr 1fr;
+    gap:48px;
+    align-items:start;
+  }
+  .venue-map{
+    aspect-ratio:4/3;
+    background:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px),
+      var(--surface-alt);
+    background-size:24px 24px;
+    border:1px solid var(--rule);
+    border-radius:3px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-dim);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    text-align:center;
+    padding:20px;
+  }
+  .venue-detail{margin-bottom:18px;}
+  .venue-detail .k{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--text-dim); margin-bottom:4px;
+  }
+  @media (max-width:720px){
+    .venue-grid{grid-template-columns:1fr;}
+  }
+
+  /* REGISTER */
+  .register-box{
+    border:1px solid var(--accent);
+    background:var(--surface);
+    border-radius:3px;
+    padding:40px;
+    text-align:center;
+  }
+  .register-box h2{margin-bottom:12px;}
+  .register-box p{color:var(--text-dim); max-width:48ch; margin:0 auto 28px;}
+  .deadline{
+    margin-top:20px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px; color:var(--text-dim);
+  }
+  .deadline span{color:var(--accent-2);}
+
+  /* FOOTER */
+  footer{
+    border-top:1px solid var(--rule);
+    padding:40px 0;
+  }
+  .footer-row{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-size:13px; color:var(--text-dim);
+  }
+  footer a{color:var(--text-dim); text-decoration:underline; text-underline-offset:3px;}
+  footer a:hover{color:var(--text);}
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px;
+  }
+
+  .edit-note{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--text-dim);
+    opacity:0.6;
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-row">
+    <div class="nav-brand">pyRing // workshop</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#program">Program</a></li>
+      <li><a href="#venue">Venue</a></li>
+      <li><a href="#register">Register</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Workshop · 15–17 September 2026 · Copenhagen</div>
+    <h1>Ringdown analysis in practice, with <em>pyRing</em></h1>
+    <p class="hero-sub">
+      A three-day, hands-on workshop on black hole spectroscopy and Bayesian ringdown
+      inference using the pyRing pipeline — from raw strain data to quasi-normal mode
+      constraints.
+    </p>
+    <div class="cta-row">
+      <a href="#register" class="btn btn-primary">Register</a>
+      <a href="#program" class="btn btn-ghost">View program</a>
+    </div>
+
+    <div class="waveform">
+      <div class="waveform-label">
+        <span>STRAIN · h(t), ARBITRARY UNITS</span>
+        <span>QNM RINGDOWN, ℓ=2 m=2 n=0</span>
+      </div>
+      <svg viewBox="0 0 1000 220" preserveAspectRatio="none">
+        <line x1="0" y1="110" x2="1000" y2="110" class="waveform-axis"/>
+        <path class="waveform-path" d="M0,110
+          C 20,10 40,10 60,110
+          S 100,190 120,110
+          S 160,180 180,110
+          S 220,170 240,110
+          S 280,155 300,110
+          S 340,145 360,110
+          S 400,135 420,110
+          S 460,128 480,110
+          S 520,122 540,110
+          S 580,117 600,110
+          S 640,114 660,110
+          S 700,112 720,110
+          S 760,111 780,110
+          S 820,110.5 840,110
+          L 1000,110"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="strip-item">
+      <div class="k">Dates</div>
+      <div class="v">15–17 September 2026</div>
+    </div>
+    <div class="strip-item">
+      <div class="k">Venue</div>
+      <div class="v">Niels Bohr Institute, Copenhagen</div>
+    </div>
+    <div class="strip-item">
+      <div class="k">Format</div>
+      <div class="v">In person · limited seats</div>
+    </div>
+  </div>
+</div>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag mono">01</span>
+      <h2>About the workshop</h2>
+    </div>
+    <p class="lede">
+      This workshop is aimed at graduate students and postdocs working on gravitational-wave
+      data analysis who want practical, working knowledge of ringdown inference. Sessions move
+      from theory to pipeline internals to a hands-on analysis of real LVK data, using pyRing
+      to extract quasi-normal mode frequencies and damping times and to test their consistency
+      with the Kerr hypothesis.
+    </p>
+    <p class="lede">
+      No prior pyRing experience is required. Participants should bring a laptop with Python
+      installed; setup instructions will be circulated ahead of the workshop.
+    </p>
+  </div>
+</section>
+
+<section class="alt" id="program">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag mono">02</span>
+      <h2>Program</h2>
+    </div>
+    <ul class="program-list">
+      <li class="program-item">
+        <div class="program-time mono">DAY 1</div>
+        <div>
+          <div class="program-title">Ringdown theory &amp; black hole spectroscopy</div>
+          <div class="program-desc">Quasi-normal modes, the no-hair theorem, and what ringdown tests can and can't tell us about Kerr.</div>
+        </div>
+      </li>
+      <li class="program-item">
+        <div class="program-time mono">DAY 2</div>
+        <div>
+          <div class="program-title">Inside pyRing</div>
+          <div class="program-desc">Pipeline architecture, priors, waveform models, and a guided walkthrough of a real O4 configuration.</div>
+        </div>
+      </li>
+      <li class="program-item">
+        <div class="program-time mono">DAY 3</div>
+        <div>
+          <div class="program-title">Hands-on analysis session</div>
+          <div class="program-desc">Participants run their own ringdown fit end to end, on cluster resources provided for the workshop.</div>
+        </div>
+      </li>
+    </ul>
+    <p class="edit-note" style="margin-top:16px;">Edit note: replace with the real daily schedule and speaker names once finalized.</p>
+  </div>
+</section>
+
+<section id="venue">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag mono">03</span>
+      <h2>Venue &amp; travel</h2>
+    </div>
+    <div class="venue-grid">
+      <div class="venue-map">Map embed placeholder<br>(swap for Google Maps / OSM embed)</div>
+      <div>
+        <div class="venue-detail">
+          <div class="k">Address</div>
+          <div>Niels Bohr Institute, Blegdamsvej 17, 2100 København Ø</div>
+        </div>
+        <div class="venue-detail">
+          <div class="k">Getting there</div>
+          <div>Nearest metro/bus stop and airport transfer notes go here.</div>
+        </div>
+        <div class="venue-detail">
+          <div class="k">Accommodation</div>
+          <div>Suggested hotels or a room block link goes here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="register">
+  <div class="wrap">
+    <div class="register-box">
+      <h2>Reserve your seat</h2>
+      <p>Places are limited to keep the hands-on sessions small. Registration is free but required.</p>
+      <a href="#" class="btn btn-primary">Go to registration form</a>
+      <div class="deadline">Registration closes <span>31 August 2026</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <div>Organized by the Strong Gravity group, Center of Gravity, Niels Bohr Institute</div>
+    <div>Questions? <a href="mailto:contact@example.org">contact@example.org</a> · <a href="https://github.com/lscsoft/pyring" target="_blank" rel="noopener">pyRing repository</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
